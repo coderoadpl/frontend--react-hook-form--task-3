@@ -1,7 +1,9 @@
 import React from 'react'
 
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import isEmail from 'validator/lib/isEmail'
+
+import TextField from './components/TextField'
 
 export const App = () => {
   console.log('RENDER')
@@ -10,6 +12,7 @@ export const App = () => {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors }
   } = useForm()
 
@@ -24,13 +27,6 @@ export const App = () => {
 
   const password = watch('password')
 
-  const registerEmail = register('email', {
-    required: {
-      value: true,
-      message: 'email is required'
-    },
-    validate: (email) => isEmail(email) || 'must be valid email address'
-  })
   const registerPassword = register('password', {
     required: {
       value: true,
@@ -61,13 +57,26 @@ export const App = () => {
       <form
         onSubmit={onSubmit}
       >
-        <input
-          placeholder={'E-mail'}
-          {...registerEmail}
+        <Controller
+          control={control}
+          name={'email'}
+          rules={{
+            required: {
+              value: true,
+              message: 'email is required'
+            },
+            validate: (email) => isEmail(email) || 'must be valid email address'
+          }}
+          defaultValue={''}
+          render={({ field: { onChange, value } }) => (
+            <TextField
+              placeholder={'E-mail'}
+              value={value}
+              onChange={onChange}
+              errorMessage={errors.email && errors.email.message}
+            />
+          )}
         />
-        {
-          errors.email && <p>{errors.email.message}</p>
-        }
         <br />
         <input
           placeholder={'Password'}
